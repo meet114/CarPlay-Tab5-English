@@ -4,7 +4,7 @@
 
 运行在 M5Stack Tab5（ESP32-P4）上的有线 CarPlay 接收端。iPhone 接 USB-A，Tab5 自行处理配对、音视频、触摸和设置页面。视频由 OpenH264 软件解码。
 
-本项目是独立实验项目，未获 Apple 认证。**当前仓库附带公开共享的实验性认证材料；带认证固件中的私钥可被提取，不能视为保密身份。无认证构建不能进入 CarPlay。** 详见[软件认证说明](docs/软件认证接入.md)。
+本项目是独立实验项目，未获 Apple 认证。**当前仓库附带公开共享的实验性认证材料；带认证固件中的私钥可被提取，不能视为保密身份。无认证构建不能进入 CarPlay。** 详见[软件认证说明](docs/software-authentication-setup.md)。
 
 ## v1.0.0 功能
 
@@ -35,7 +35,7 @@ python3 scripts/fetch_openh264.py
 ./scripts/build.sh --software-auth      # 使用仓库附带的 secrets/mfi 实验身份
 ```
 
-当前仓库已附带 [secrets/mfi](secrets/mfi/README.md) 中的 `identity.pk8`、`certificate.p7b`、`certificate.der`，克隆当前 main 即可取得；获取与校验步骤见[软件认证接入](docs/软件认证接入.md)。v1.0.0 首发标签/附件保持原快照，不含这些材料。认证选项会被 CMake 缓存，构建脚本始终显式设置 ON/OFF。
+当前仓库已附带 [secrets/mfi](secrets/mfi/README.md) 中的 `identity.pk8`、`certificate.p7b`、`certificate.der`，克隆当前 main 即可取得；获取与校验步骤见[软件认证接入](docs/software-authentication-setup.md)。v1.0.0 首发标签/附件保持原快照，不含这些材料。认证选项会被 CMake 缓存，构建脚本始终显式设置 ON/OFF。
 
 发布构建使用独立目录，从已跟踪的 `sdkconfig.defaults` 重新生成配置：
 
@@ -73,7 +73,7 @@ python -m esptool --chip esp32p4 -p <串口> write_flash 0x10000 <版本对应�
 | `tests/` | 持续回归测试、硬件桩和合成码流，仅在主机构建 |
 | `scripts/` | 构建、发布、依赖获取及测试入口 |
 | `tools/perf/` | 离线日志分析、码流回放和 CRC 工具，不进入固件 |
-| `docs/` | 设计、发布说明与[执行记录](docs/执行记录.md) |
+| `docs/` | 设计、发布说明与[执行记录](docs/execution-log.md) |
 
 v1.0.0 移除了离线演示、开机音频测试、烧录式配对清除维护模式、应用中的模拟显示分支，以及 `tools/perf/add_*.py` 一次性源码改写脚本。合成码流仅保留给解码回归，不再嵌入应用。开发日志中的旧命令属于历史记录，不应直接用于本版。
 

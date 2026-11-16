@@ -29,51 +29,71 @@ copyright notices and GPL-3.0-or-later terms. Upstream provenance is retained in
 media-session control flow through a provider API; no real credentials are included. The CarKit StartService block is adapted from the
 upstream Lockdown client, with validation of the optional SSL flag.
 
-## 离线协议核心（2026-11-06）
+## Offline protocol core (2026-11-06)
 
-`main/core/ntb16.h`、`main/core/airplay_rtsp_codec.c/h` 和
-`tests/test_ntb16.cpp` 移植自同一固定 Carplay-S3 提交
-`79a9f169f275b283f2909c5a326ed03c716c0d02`，按 GPL-3.0-or-later 保留，
-详见 `main/core/UPSTREAM.md`。
+`main/core/ntb16.h`, `main/core/airplay_rtsp_codec.c/h` and
+`tests/test_ntb16.cpp` are ported from the same pinned Carplay-S3 commit
+`79a9f169f275b283f2909c5a326ed03c716c0d02` and retained under GPL-3.0-or-later.
+See `main/core/UPSTREAM.md`.
 
-## OpenH264 与合成视频测试（2026-11-06）
+## OpenH264 and synthetic video tests (2026-11-06)
 
-Cisco OpenH264 v2.6.0（commit `652bdb7719f30b52b08e506645a7322ff1b2cc6f`）
-按 BSD-2-Clause 使用；许可证在 `components/openh264_sw/LICENSE`。
-下载工具、组件 CMake 适配和 `tests/assets/high_fixture.bin`、`high_ltr.bin`、
-`high_ltr_crc.h` 源于上述固定 Carplay-S3 提交，保留其 GPL-3.0-or-later
-项目来源。测试素材是合成码流，不含用户媒体。参考值来自上游 FFmpeg 校验；
-本项目另外执行 OpenH264 解码逐帧比较，不把参考值本身当作通过证据。
+Cisco OpenH264 v2.6.0 (commit `652bdb7719f30b52b08e506645a7322ff1b2cc6f`)
+is used under BSD-2-Clause; the license is in `components/openh264_sw/LICENSE`.
+The fetch tooling, component CMake adaptation and `tests/assets/high_fixture.bin`,
+`high_ltr.bin`, `high_ltr_crc.h` come from the same pinned Carplay-S3 commit and
+retain that project's GPL-3.0-or-later provenance. Test assets are synthetic
+bitstreams with no user media. Reference values come from upstream FFmpeg
+checks; this project also compares OpenH264 decode frame-by-frame and does not
+treat the reference values alone as pass evidence.
 
-## NCM 与 AirPlay 协议组件（开发集成中）
+## NCM and AirPlay protocol components (integration in progress)
 
-`main/ncm_host.cpp/h`、`components/airplay_*`（control、timing、screen、
-media_bridge、session、pairing、rtsp）、`components/net_port`、`time_port`、
-`media_bridge` 和 `auth_port` 来源于同一固定 Carplay-S3 提交
-`79a9f169f275b283f2909c5a326ed03c716c0d02`，保留 GPL-3.0-or-later 声明。
-本节所述协议移植本身不含认证凭据；后续附带的实验认证材料见下方软件认证 provider 说明。auth_port 未注册 provider 时明确返回不支持。
-本地 NCM 改用 CDC Union 关联，并支持高速端点，修正分配失败回收和数据端点停止。
-协议组件复制和编译不等于服务已启动；运行路径及验证状态以执行记录为准。
+`main/ncm_host.cpp/h`, `components/airplay_*` (control, timing, screen,
+media_bridge, session, pairing, rtsp), `components/net_port`, `time_port`,
+`media_bridge` and `auth_port` come from the same pinned Carplay-S3 commit
+`79a9f169f275b283f2909c5a326ed03c716c0d02` and retain GPL-3.0-or-later notices.
+The protocol port described in this section does not itself include auth
+credentials; the later experimental auth materials are covered under the
+software-auth provider note below. When no provider is registered, auth_port
+explicitly returns unsupported. Local NCM uses a CDC Union association, supports
+high-speed endpoints, and fixes allocation-failure reclaim and data-endpoint
+stop behavior. Copying and compiling protocol components does not mean services
+are running; runtime paths and validation status are recorded in the execution
+log.
 
-## AirPlay 本地身份及 Ed25519
+## AirPlay local identity and Ed25519
 
-`airplay_identity_port`、`airplay_pairing_store`、`airplay_software_provider`
-源于前述固定 Carplay-S3 提交。模板 plist 不含认证私钥。
-`components/ed25519` 保留 Orson Peters 的 zlib 风格许可证
-（`components/ed25519/LICENSE`），原始版权及来源文件保留。
-本地改动将 AirPlay 接收器身份与控制器记录分别放入现有 NVS 的
-`tab5_ap_id`、`tab5_ap_pair` 命名空间，与 Lockdown `tab5_pair` 分离。
+`airplay_identity_port`, `airplay_pairing_store` and `airplay_software_provider`
+come from the same pinned Carplay-S3 commit. Template plists contain no auth
+private keys. `components/ed25519` retains Orson Peters' zlib-style license
+(`components/ed25519/LICENSE`) with original copyright and provenance files.
+Local changes place AirPlay receiver identity and controller records in the
+existing NVS namespaces `tab5_ap_id` and `tab5_ap_pair`, separate from Lockdown
+`tab5_pair`.
 
-`tests/test_airplay_bplist.c` 与 `tests/test_airplay_screen_codec.c` 亦移植自固定
-Carplay-S3 提交，用于对本项目所编译的协议源码运行主机边界测试。
-`configure_tab5_info.py` 是本地新增的能力模板规范化与检查脚本。
+`tests/test_airplay_bplist.c` and `tests/test_airplay_screen_codec.c` are also
+ported from the pinned Carplay-S3 commit for host boundary tests against this
+project's compiled protocol sources. `configure_tab5_info.py` is a local script
+that normalizes and checks capability templates.
 
-完整 `main/iap2_client.cpp` 控制流程和 `main/core/iap2_params.h`、
-`tests/test_iap2_params.cpp` 来自同一固定上游提交；本地改为 Tab5 身份、
-显式 NCM 接口配置、通用认证 provider 和本地服务生命周期，不复制认证凭据。
+The full `main/iap2_client.cpp` control flow plus `main/core/iap2_params.h` and
+`tests/test_iap2_params.cpp` come from the same pinned upstream commit. Local
+changes use Tab5 identity, explicit NCM interface setup, a generic auth provider
+and local service lifecycle without copying auth credentials into source by
+default.
 
-## 可选 iAP2 软件认证 provider
+## Optional iAP2 software-auth provider
 
-components/auth_software_provider 源于上述固定 Carplay-S3 提交 src/vendor/auth_software_provider.c/h，保留 GPL-3.0-or-later。本地增加可选构建、签名互斥锁、敏感临时缓冲清零和实际 raw 签名验证自检。实验身份材料现随项目保存在 `secrets/mfi/`，源自 DiPlay v0.2.21 APK 的 `assets/offline-mfi`；DER 证书由 PKCS#7 容器提取。材料不作为 GPL 源码再许可，本项目未独立确认更早来源或分发授权范围。来源、文件校验和构建边界见 [软件认证接入](docs/软件认证接入.md)。
+`components/auth_software_provider` comes from the same pinned Carplay-S3 commit
+`src/vendor/auth_software_provider.c/h` and retains GPL-3.0-or-later. Local
+additions include optional builds, a signing mutex, clearing of sensitive
+temporary buffers and a real raw-signature verification self-check. Experimental
+identity materials are kept with the project under `secrets/mfi/`, sourced from
+DiPlay v0.2.21 APK `assets/offline-mfi`; the DER certificate is extracted from
+the PKCS#7 container. The materials are not relicensed as GPL source. This
+project has not independently confirmed earlier provenance or redistribution
+authorization scope. Provenance, checksums and build boundaries are in
+[software authentication setup](docs/software-authentication-setup.md).
 
 `components/openh264_sw/cabac_decoder_esp.cpp` and `cabac_bin_inline.h` are modified copies of OpenH264 v2.6.0 `cabac_decoder.cpp` (BSD-2-Clause), changed to use 32-bit arithmetic.

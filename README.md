@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md)
 
 A wired CarPlay receiver for M5Stack Tab5 (ESP32-P4). Connect an unlocked iPhone to USB-A. The P4 handles pairing, video, audio, touch and local settings, with OpenH264 software video decoding.
 
-This is an independent experimental project, not Apple-certified. **The current repository includes a shared experimental identity. Its private key is public and extractable from authenticated firmware; it is not a confidential identity. A no-auth build cannot enter CarPlay.** See [authentication provenance and setup](docs/软件认证接入.md).
+This is an independent experimental project, not Apple-certified. **The current repository includes a shared experimental identity. Its private key is public and extractable from authenticated firmware; it is not a confidential identity. A no-auth build cannot enter CarPlay.** See [authentication provenance and setup](docs/software-authentication-setup.md).
 
 ## Features
 
@@ -35,7 +35,7 @@ python3 scripts/fetch_openh264.py
 ./scripts/build.sh --software-auth      # bundled experimental identity from secrets/mfi
 ```
 
-The current main branch includes `identity.pk8`, `certificate.p7b` and `certificate.der` in [secrets/mfi/](secrets/mfi/README.md); see the [acquisition and checksum guide](docs/软件认证接入.md). The original v1.0.0 tag and release attachments retain their original snapshot without these files. Build scripts explicitly set authentication ON/OFF instead of inheriting an old CMake choice.
+The current main branch includes `identity.pk8`, `certificate.p7b` and `certificate.der` in [secrets/mfi/](secrets/mfi/README.md); see the [acquisition and checksum guide](docs/software-authentication-setup.md). The original v1.0.0 tag and release attachments retain their original snapshot without these files. Build scripts explicitly set authentication ON/OFF instead of inheriting an old CMake choice.
 
 Release builds use separate directories and regenerate configuration from tracked defaults:
 
@@ -71,7 +71,7 @@ The `-full.bin` is written at **0x0** for fresh installations only. It replaces 
 - `tests/`: regression tests, stubs and synthetic fixtures; not linked into firmware.
 - `scripts/`: dependency fetch, build, release and test entry points.
 - `tools/perf/`: offline analysis, stream replay and CRC tools; not linked into firmware.
-- `docs/`: design, release notes and [execution history](docs/执行记录.md).
+- `docs/`: design, release notes and [execution history](docs/execution-log.md).
 
 v1.0.0 removes the offline demo, boot audio test, flash-based pairing-reset maintenance mode, simulated UI branches and one-off `tools/perf/add_*.py` source-patching scripts. Decoder fixtures remain for host regression only. Historical commands in the execution log do not describe the current release procedure.
 

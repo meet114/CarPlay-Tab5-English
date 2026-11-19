@@ -31,13 +31,3 @@ identity files, device pairing records or secrets.
 Firmware build instructions are in README.md. Passing CI does not establish
 USB, CarPlay, audio/video or touchscreen behavior on real hardware. Record
 hardware results and remaining limitations in the PR.
-
-## 中文说明
-
-所有变更先推送到功能分支，再通过 PR 合入 main。main 禁止直接推送、强推和删除，
-管理员同样受约束。合并前须解决评审对话、同步最新 main，并通过 Required CI。
-当前只有一位维护者，不强制第二人批准；增加协作者后可再启用审批要求。
-
-本地运行上面的 CLI 和主机测试命令。CI 还会校验工作流、编译固件并执行解码与
-加密回归。只能使用 squash 合并，合并后自动删除功能分支。
-CI 通过不代表真机验证通过，请在 PR 中说明真机测试结果和未验证项目。

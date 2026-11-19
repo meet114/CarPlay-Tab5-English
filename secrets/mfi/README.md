@@ -1,16 +1,16 @@
-# 实验性软件认证材料
+# Experimental software authentication materials
 
-这三份材料随仓库提交，供可选 iAP2 软件认证构建使用：
+These three files are committed with the repository for optional iAP2 software-auth builds:
 
-| 文件 | 用途 |
+| File | Purpose |
 |---|---|
-| [identity.pk8](identity.pk8) | PKCS#8 P-256 私钥；这是公开共享的实验身份，不是保密密钥 |
-| [certificate.p7b](certificate.p7b) | 手机认证使用的 PKCS#7 证书容器 |
-| [certificate.der](certificate.der) | 从上述容器提取的 DER 证书，用于公私钥匹配与签名自检 |
+| [identity.pk8](identity.pk8) | PKCS#8 P-256 private key; this is a publicly shared experimental identity, not a confidential secret |
+| [certificate.p7b](certificate.p7b) | PKCS#7 certificate container used for phone authentication |
+| [certificate.der](certificate.der) | DER certificate extracted from that container, used for key matching and signature self-checks |
 
-克隆当前仓库即可取得；单独下载时须保持文件名及 `secrets/mfi/` 目录结构。不要将网页 HTML 保存为密钥文件。文件大小与 SHA-256 见 [SHA256SUMS](SHA256SUMS)。
+Clone the current repository to obtain them. If downloading separately, keep the filenames and the `secrets/mfi/` directory layout. Do not save web-page HTML as key files. File sizes and SHA-256 digests are in [SHA256SUMS](SHA256SUMS).
 
-在仓库根目录运行：
+From the repository root:
 
 ```sh
 (cd secrets/mfi && shasum -a 256 -c SHA256SUMS)
@@ -19,6 +19,6 @@ python3 scripts/fetch_openh264.py
 ./scripts/build.sh --software-auth
 ```
 
-材料来源于 DiPlay v0.2.21 官方 Release APK 的 `assets/offline-mfi`；APK SHA-256、溯源边界、构建和实机证据见[软件认证接入](../../docs/软件认证接入.md)。证书 DER 由该 PKCS#7 容器提取。材料未因本项目 GPL 源码许可而被重新许可；附带材料不代表 Apple/MFi 授权或认证，也不保证各机型/iOS 持续接受该身份。
+The materials come from the DiPlay v0.2.21 official Release APK `assets/offline-mfi` tree. APK SHA-256, provenance boundaries, build steps and device evidence are in [software authentication setup](../../docs/software-authentication-setup.md). The DER certificate was extracted from the PKCS#7 container. These materials are not relicensed under this project's GPL source license; bundling them does not imply Apple/MFi authorization or certification, and does not guarantee continued acceptance on every device or iOS version.
 
-本目录名称沿用现有构建路径。这里列出的身份已经公开，不能用于需要私钥保密性的生产身份或作为设备独有身份。其他个人/设备凭据、NVS 配对记录和日志不属于这些文件，仍不应提交。
+This directory name follows the existing build path. The identity listed here is already public and must not be used where private-key confidentiality or a device-unique identity is required. Other personal/device credentials, NVS pairing records and logs are outside these files and must still not be committed.

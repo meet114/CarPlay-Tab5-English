@@ -1,20 +1,20 @@
-# AirPlay 软件身份说明
+# AirPlay software identity notice
 
-该组件为开发测试提供 AirPlay receiver identity，不需要外置 MFi 芯片，也不把 MFi challenge 跳过或伪装成成功。iAP2 MFi challenge-response 与 AirPlay Pair-Setup/Pair-Verify 是独立流程。
+This component provides an AirPlay receiver identity for development and testing. It does not require an external MFi chip, and it does not skip or fake an MFi challenge success. iAP2 MFi challenge-response and AirPlay Pair-Setup/Pair-Verify are independent flows.
 
-## 身份与存储
+## Identity and storage
 
-- 首次启动时，组件使用 ESP-IDF 硬件随机源生成 32 字节 Ed25519 seed 和随机 pairing UUID，将它们保存到 `pairing` NVS 分区的 `airplay_id` namespace。后续启动读取同一份身份，以保持配对关系稳定。
-- 公钥、device ID、`/info` binary plist 和 `_airplay._tcp` TXT 数据由该身份派生或生成；TXT 数据的生成不等于已有 mDNS 广播实测。当前 `/info` 声明主副两屏，默认 480×288 / 6 FPS，主屏支持 Touch HID；四档尺寸及帧率以 `assets/video_profiles.json` 为准，物理 LCD 为 800×480。
-- Pair-Setup 默认码为 `3939`，属于源码中的开发默认值，可通过 Kconfig 的 `Wired AirPlay → Pair-Setup code`（`CONFIG_AIRPLAY_PAIRING_CODE`）修改。
-- 当前固件没有启用 NVS encryption 或 Flash encryption。拿到设备或 Flash 镜像的人可以读取 NVS 中的 seed；这是实验实现，不适合公开部署或存放敏感身份。
+- On first boot, the component uses the ESP-IDF hardware RNG to generate a 32-byte Ed25519 seed and a random pairing UUID, then stores them in the `airplay_id` namespace of the `pairing` NVS partition. Later boots reuse the same identity so pairing relationships stay stable.
+- Public key, device ID, `/info` binary plist and `_airplay._tcp` TXT data are derived or generated from that identity. Generating TXT data is not the same as verified mDNS advertisement. Current `/info` declares primary and secondary screens, default 480×288 / 6 FPS, with Touch HID on the primary screen. The four size/FPS profiles come from `assets/video_profiles.json`; the physical LCD is 800×480.
+- The default Pair-Setup code is `3939`, a development default in source. Change it via Kconfig `Wired AirPlay → Pair-Setup code` (`CONFIG_AIRPLAY_PAIRING_CODE`).
+- Current firmware does not enable NVS encryption or Flash encryption. Anyone with the device or a Flash image can read the NVS seed. This is an experimental implementation and is not suitable for public deployment or sensitive identity storage.
 
-## 协议实现与限制
+## Protocol behavior and limits
 
-- Pair-Setup 按 SRP-6a 和 Ed25519 accessory 签名处理配对；Pair-Verify 使用已配对 controller 公钥验签，并派生会话密钥。controller 公钥记录单独存入 NVS，最多保存 8 个。
-- Ed25519 使用 `orlp/ed25519` 上游实现，revision `b1f19fab4aebe607805620d25a5e42566ce46a0e`，保留 zlib 许可证与上游版权信息，见 `components/ed25519/`。
-- 该代码按 DiPlay 的协议行为构建，不代表 Apple 签发或批准的 AirPlay receiver 身份，也不保证其他 iOS 版本会接受。本工程已有同板、同一 iPhone 的 AirPlay 会话、真实视频、触摸与本地菜单历史实测，见 [验证记录](../../docs/验证记录.md)。这不构成通用兼容性、mDNS、真实音乐 PCM 接收、I2S 出声或麦克风上行的通过证明。
+- Pair-Setup follows SRP-6a with an Ed25519 accessory signature. Pair-Verify validates the paired controller public key and derives session keys. Controller public-key records are stored separately in NVS, up to 8 entries.
+- Ed25519 uses the `orlp/ed25519` upstream implementation at revision `b1f19fab4aebe607805620d25a5e42566ce46a0e`, retaining the zlib license and upstream copyright notices under `components/ed25519/`.
+- The code follows DiPlay protocol behavior. It is not an Apple-issued or Apple-approved AirPlay receiver identity, and other iOS versions are not guaranteed to accept it. This project has historical device evidence of AirPlay sessions, real video, touch and local menus on the same board and iPhone; see [execution log](../../docs/execution-log.md). That is not proof of general compatibility, mDNS, real music PCM reception, I2S audio output or microphone uplink.
 
-不要将实际使用的非默认 Pair-Setup 码、seed、私钥或设备镜像提交到公开仓库、问题报告或日志。若要部署到共享网络，应先更改默认配对码并为目标硬件评估 NVS/Flash 加密。iAP2 软件认证材料来自本机忽略目录 `secrets/mfi/`，嵌入后可从固件提取；它与本组件生成的 AirPlay 身份、板上 Lockdown 配对身份是三套不同材料。
+Do not commit non-default Pair-Setup codes in actual use, seeds, private keys or device images to public repositories, issue reports or logs. Before deploying on a shared network, change the default pairing code and evaluate NVS/Flash encryption for the target hardware. iAP2 software-auth materials come from the local `secrets/mfi/` tree and can be extracted from authenticated firmware after embedding. They are distinct from this component's AirPlay identity and from on-device Lockdown pairing identity.
 
-完整 Release 固件按维护者要求嵌入与实测相同的 iAP2 实验身份，访客不需要导入认证文件；源码继续排除原材料。它不是本组件的 Ed25519 seed。材料与 DiPlay 本机输入一致，具体来源链见 [认证材料来源](../../docs/认证材料来源.md)。
+Full Release firmware embeds the same experimental iAP2 identity used in device testing so visitors do not need to import auth files; source trees continue to treat raw materials carefully. That identity is not this component's Ed25519 seed. Materials match the DiPlay local inputs; see [software authentication setup](../../docs/software-authentication-setup.md) for the provenance chain.

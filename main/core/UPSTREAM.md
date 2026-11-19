@@ -1,12 +1,15 @@
-# 来源及本地边界
+# Provenance and local boundaries
 
-`ntb16.h`、`airplay_rtsp_codec.c/h` 来自 `xmz28/Carplay-S3` commit
-`79a9f169f275b283f2909c5a326ed03c716c0d02`，分别对应 `src/ntb16.h` 和
-`components/airplay_rtsp/`。保留 GPL-3.0-or-later 与原版权声明。
-`tests/test_ntb16.cpp` 同源（调整 main 链接声明以通过 macOS Clang）。
-许可证见根目录 `licenses/Carplay-S3-GPL-3.0.txt`。
+`ntb16.h` and `airplay_rtsp_codec.c/h` come from `xmz28/Carplay-S3` commit
+`79a9f169f275b283f2909c5a326ed03c716c0d02`, mapping to `src/ntb16.h` and
+`components/airplay_rtsp/`. GPL-3.0-or-later and original copyright notices are
+retained. `tests/test_ntb16.cpp` is from the same source (with a main-link
+declaration tweak for macOS Clang). License text is at
+`licenses/Carplay-S3-GPL-3.0.txt` in the repository root.
 
-`session.c/h`、`rtsp_stream.c/h`、`touch.c/h` 为本项目新增模块。
-当前协议核心与物理传输适配分开验证；独立测试通过不代表 NCM 已建立或
-手机已经完成 RTSP 会话。RTSP 回调中的请求/正文均为短期视图，使用者必须
-在回调返回前处理或复制。所有核心状态由单一任务持有。
+`session.c/h`, `rtsp_stream.c/h` and `touch.c/h` are new modules in this
+project. Protocol core and physical transport adapters are validated
+separately; a passing unit test does not mean NCM is up or that the phone has
+finished an RTSP session. Request/body views in RTSP callbacks are short-lived;
+callers must process or copy them before returning. All core state is owned by
+a single task.
